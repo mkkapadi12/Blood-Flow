@@ -1,25 +1,18 @@
-import DispatcherLogin from "@/page/dispatcher/auth/Login";
-import DispatcherRegister from "@/page/dispatcher/auth/Register";
-import Dashboard from "@/page/dispatcher/page/Dashboard";
-import SingleRequest from "@/page/dispatcher/page/singleRequest";
+import DispatcherLayout from "@/components/layouts/DispatcherLayout";
+import DispatcherLogin from "@/pages/dispatcher/auth/DispatcherLogin";
+import DispatcherRegister from "@/pages/dispatcher/auth/DispatcherRegister";
+import DispatcherDashboard from "@/pages/dispatcher/page/DispatcherDashboard";
+import SingleRequestPage from "@/pages/dispatcher/page/SingleRequestPage";
 
-const dispatcherRoutes = [
+export const dispatcherRoutes = [
+  { path: "/dispatcher/login", element: <DispatcherLogin /> },
+  { path: "/dispatcher/register", element: <DispatcherRegister /> },
   {
-    path: "/dispatcher/login",
-    element: <DispatcherLogin />,
-  },
-  {
-    path: "/dispatcher/register",
-    element: <DispatcherRegister />,
-  },
-  {
-    path: "/dispatcher/dashboard",
-    element: <Dashboard />,
-  },
-  {
-    path: "/dispatcher/requests/:id",
-    element: <SingleRequest />,
+    path: "/dispatcher",
+    element: <DispatcherLayout />,
+    children: [
+      { path: "dashboard", element: <DispatcherDashboard /> },
+      { path: "requests/:id", element: <SingleRequestPage /> },
+    ],
   },
 ];
-
-export default dispatcherRoutes;

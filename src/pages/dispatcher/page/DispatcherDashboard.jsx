@@ -11,7 +11,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
-const Dashboard = () => {
+const DispatcherDashboard = () => {
   const { dispatcher, allrequests, myrequests } = useSelector(
     (state) => state.dispatcher,
   );
@@ -157,4 +157,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default DispatcherDashboard;

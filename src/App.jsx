@@ -1,8 +1,8 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Home from "./page/Home";
-import NotFound from "./page/NotFound";
-import appRoutes from "./routes";
+import Home from "./pages/Home";
+import NotFound from "./pages/NotFound";
+import { appRoutes } from "./routes";
 
 const renderRoutes = (routes) =>
   routes.map((route, index) => {

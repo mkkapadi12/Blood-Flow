@@ -1,9 +1,11 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { requesterAPI } from "./requester.api";
 
+import { REQUESTER_TOKEN_KEY } from "@/config/storage-keys";
+
 const initialState = {
   requester: null,
-  token: localStorage.getItem("requestertestToken") || null,
+  token: localStorage.getItem(REQUESTER_TOKEN_KEY) || null,
   latestRequest: null,
   myRequests: [],
   currentRequest: null,
@@ -34,7 +36,7 @@ export const loginRequester = createAsyncThunk(
   async (data, { rejectWithValue, dispatch }) => {
     try {
       const result = await requesterAPI.login(data);
-      localStorage.setItem("requestertestToken", result.token);
+      localStorage.setItem(REQUESTER_TOKEN_KEY, result.token);
 
       await dispatch(getRequesterProfile()).unwrap();
 
@@ -134,7 +136,7 @@ const requesterSlice = createSlice({
     logout: (state) => {
       state.requester = null;
       state.token = null;
-      localStorage.removeItem("requestertestToken");
+      localStorage.removeItem(REQUESTER_TOKEN_KEY);
     },
   },
   extraReducers: (builder) => {

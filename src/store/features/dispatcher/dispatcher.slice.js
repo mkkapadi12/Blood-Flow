@@ -1,9 +1,10 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { dispatcherAPI } from "./dispatcher.api";
+import { DISPATCHER_TOKEN_KEY } from "@/config/storage-keys";
 
 const initialState = {
   dispatcher: null,
-  token: localStorage.getItem("dispatchertestToken") || null,
+  token: localStorage.getItem(DISPATCHER_TOKEN_KEY) || null,
   allrequests: [],
   myrequests: [],
   currentRequest: null,
@@ -34,7 +35,7 @@ export const loginDispatcher = createAsyncThunk(
   async (data, { rejectWithValue, dispatch }) => {
     try {
       const result = await dispatcherAPI.login(data);
-      localStorage.setItem("dispatchertestToken", result.token);
+      localStorage.setItem(DISPATCHER_TOKEN_KEY, result.token);
 
       await dispatch(getDispatcherProfile()).unwrap();
 
@@ -169,8 +170,7 @@ const dispatcherSlice = createSlice({
       state.token = null;
       state.loading = false;
       state.error = null;
-      localStorage.removeItem("dispatchertestToken");
-      localStorage.removeItem("dispatcherToken");
+      localStorage.removeItem(DISPATCHER_TOKEN_KEY);
     },
   },
   extraReducers: (builder) => {

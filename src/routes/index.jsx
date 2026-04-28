@@ -1,6 +1,10 @@
-import dispatcherRoutes from "./dispatcherRoutes";
-import requesterRoutes from "./requesterRoutes";
+// import AuthLayout from "@/components/layouts/AuthLayout";
+import { dispatcherRoutes } from "./dispatcherRoutes";
+import { requesterRoutes } from "./requesterRoutes";
 
-const appRoutes = [...requesterRoutes, ...dispatcherRoutes];
-
-export default appRoutes;
+export const appRoutes = [
+  {
+    // element: <AuthLayout />,
+    children: [...requesterRoutes, ...dispatcherRoutes],
+  },
+];

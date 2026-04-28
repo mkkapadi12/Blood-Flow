@@ -1,5 +1,5 @@
-import privateAPI from "@/services/PrivateAPI";
-import publicAPI from "@/services/PublicAPI";
+import { DISPATCHER_TOKEN_KEY } from "@/config/storage-keys";
+import { privateAPI, publicAPI } from "@/lib/axios";
 
 export const dispatcherAPI = {
   register: async (data) => {
@@ -13,7 +13,7 @@ export const dispatcherAPI = {
   },
 
   dispatcherProfile: async () => {
-    const token = localStorage.getItem("dispatchertestToken");
+    const token = localStorage.getItem(DISPATCHER_TOKEN_KEY);
     const response = await privateAPI.get(`/dispatcher/profile`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
@@ -21,7 +21,7 @@ export const dispatcherAPI = {
   },
 
   getAllRequests: async () => {
-    const token = localStorage.getItem("dispatchertestToken");
+    const token = localStorage.getItem(DISPATCHER_TOKEN_KEY);
     const response = await privateAPI.get(`/dispatcher/get-all-requests`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
@@ -29,7 +29,7 @@ export const dispatcherAPI = {
   },
 
   getMyRequests: async () => {
-    const token = localStorage.getItem("dispatchertestToken");
+    const token = localStorage.getItem(DISPATCHER_TOKEN_KEY);
     const response = await privateAPI.get(`/dispatcher/get-my-requests`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
@@ -37,7 +37,7 @@ export const dispatcherAPI = {
   },
 
   getSingleRequest: async (requestId) => {
-    const token = localStorage.getItem("dispatchertestToken");
+    const token = localStorage.getItem(DISPATCHER_TOKEN_KEY);
     const response = await privateAPI.get(`/dispatcher/requests/${requestId}`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
@@ -45,7 +45,7 @@ export const dispatcherAPI = {
   },
 
   acceptRequest: async (requestId) => {
-    const token = localStorage.getItem("dispatchertestToken");
+    const token = localStorage.getItem(DISPATCHER_TOKEN_KEY);
     const response = await privateAPI.put(
       `/volunteer/${requestId}/accept`,
       {},
@@ -57,7 +57,7 @@ export const dispatcherAPI = {
   },
 
   pickupRequest: async (requestId) => {
-    const token = localStorage.getItem("dispatchertestToken");
+    const token = localStorage.getItem(DISPATCHER_TOKEN_KEY);
     const response = await privateAPI.put(
       `/volunteer/${requestId}/pickup`,
       {},
@@ -69,7 +69,7 @@ export const dispatcherAPI = {
   },
 
   deliverRequest: async (requestId) => {
-    const token = localStorage.getItem("dispatchertestToken");
+    const token = localStorage.getItem(DISPATCHER_TOKEN_KEY);
     const response = await privateAPI.put(
       `/volunteer/${requestId}/deliver`,
       {},

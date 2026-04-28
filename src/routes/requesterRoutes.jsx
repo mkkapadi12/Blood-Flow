@@ -1,30 +1,22 @@
-import RequesterLogin from "@/page/requester/auth/RequesterLogin";
-import RequesterRegister from "@/page/requester/auth/RequesterRegister";
-import Dashboard from "@/page/requester/page/Dashboard";
-import MyRequests from "@/page/requester/page/MyRequests";
-import RequestDetails from "@/page/requester/page/RequestDetails";
+import RequesterLayout from "@/components/layouts/RequesterLayout";
+import RequesterLogin from "@/pages/requester/auth/RequesterLogin";
+import RequesterRegister from "@/pages/requester/auth/RequesterRegister";
+import RequesterDashboard from "@/pages/requester/page/RequesterDashboard";
+import MyRequests from "@/pages/requester/page/MyRequests";
+import RequestDetails from "@/pages/requester/page/RequestDetails";
+// import NewRequest from "@/pages/requester/page/NewRequest";
 
-const requesterRoutes = [
+export const requesterRoutes = [
+  { path: "/requester/login", element: <RequesterLogin /> },
+  { path: "/requester/register", element: <RequesterRegister /> },
   {
-    path: "/requester/register",
-    element: <RequesterRegister />,
-  },
-  {
-    path: "/requester/login",
-    element: <RequesterLogin />,
-  },
-  {
-    path: "/requester/dashboard",
-    element: <Dashboard />,
-  },
-  {
-    path: "/requester/requests",
-    element: <MyRequests />,
-  },
-  {
-    path: "/requester/requests/:id",
-    element: <RequestDetails />,
+    path: "/requester",
+    element: <RequesterLayout />, // ← Layout wraps all protected pages
+    children: [
+      { path: "dashboard", element: <RequesterDashboard /> },
+      { path: "requests", element: <MyRequests /> },
+      { path: "requests/:id", element: <RequestDetails /> },
+      // { path: "new-request", element: <NewRequest /> },
+    ],
   },
 ];
-
-export default requesterRoutes;
