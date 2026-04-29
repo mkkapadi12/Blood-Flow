@@ -8,6 +8,7 @@ import {
   X,
   Droplets,
   ChevronRight,
+  Clock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -23,13 +24,18 @@ const NAV_ITEMS = [
     icon: ClipboardList,
   },
   {
-    label: "New Request",
-    to: "/requester/new-request",
-    icon: PlusCircle,
+    label: "Request History",
+    to: "/requester/history",
+    icon: Clock,
   },
 ];
 
-const RequesterSidebar = ({ sidebarOpen, setSidebarOpen, requester, handleLogout }) => {
+const RequesterSidebar = ({
+  sidebarOpen,
+  setSidebarOpen,
+  requester,
+  handleLogout,
+}) => {
   return (
     <>
       {/* Mobile overlay */}
@@ -44,7 +50,7 @@ const RequesterSidebar = ({ sidebarOpen, setSidebarOpen, requester, handleLogout
       <aside
         className={cn(
           "fixed inset-y-0 left-0 z-30 w-64 flex flex-col bg-gray-900 border-r border-gray-800 transition-transform duration-300 ease-in-out lg:static lg:translate-x-0",
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          sidebarOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
         {/* Logo */}
@@ -80,7 +86,7 @@ const RequesterSidebar = ({ sidebarOpen, setSidebarOpen, requester, handleLogout
                   "group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150",
                   isActive
                     ? "bg-red-500/10 text-red-400 border border-red-500/20"
-                    : "text-gray-400 hover:text-white hover:bg-gray-800 border border-transparent"
+                    : "text-gray-400 hover:text-white hover:bg-gray-800 border border-transparent",
                 )
               }
             >
@@ -91,7 +97,7 @@ const RequesterSidebar = ({ sidebarOpen, setSidebarOpen, requester, handleLogout
                       "w-4 h-4 shrink-0",
                       isActive
                         ? "text-red-400"
-                        : "text-gray-500 group-hover:text-gray-300"
+                        : "text-gray-500 group-hover:text-gray-300",
                     )}
                   />
                   <span>{label}</span>

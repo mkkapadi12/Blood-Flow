@@ -1,20 +1,7 @@
 const REQUESTER = require("../models/requester.model");
 const REQUEST = require("../models/request.model");
 const STATUSLOG = require("../models/status.model");
-const { getIO } = require("../socket/socket");
-
-const emitRequestUpdate = (request) => {
-  try {
-    const io = getIO();
-    io.to(`request_${request._id}`).emit("status_update", {
-      requestId: request._id,
-      status: request.status,
-      request,
-    });
-  } catch (error) {
-    console.log("Socket emit skipped:", error.message);
-  }
-};
+const { notifyNewRequest, notifyRequestUpdate } = require("../socket/socket");
 
 const register = async (req, res, next) => {
   try {
@@ -153,7 +140,7 @@ const createRequest = async (req, res, next) => {
 
     newRequest.statusHistory.push(statusLog._id);
     await newRequest.save();
-    emitRequestUpdate(newRequest);
+    notifyNewRequest(newRequest);
 
     return res.status(201).json({
       msg: "Request created successfully!",
@@ -261,7 +248,7 @@ const verifyDeliveryPin = async (req, res, next) => {
 
     request.statusHistory.push(statusLog._id);
     await request.save();
-    emitRequestUpdate(request);
+    notifyRequestUpdate(request);
 
     return res.status(200).json({
       msg: "Delivery confirmed successfully!",

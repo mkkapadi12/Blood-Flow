@@ -1,20 +1,7 @@
 const DISPATCHER = require("../models/dispatcher.model");
 const REQUEST = require("../models/request.model");
 const STATUSLOG = require("../models/status.model");
-const { getIO } = require("../socket/socket");
-
-const emitRequestUpdate = (request) => {
-  try {
-    const io = getIO();
-    io.to(`request_${request._id}`).emit("status_update", {
-      requestId: request._id,
-      status: request.status,
-      request,
-    });
-  } catch (error) {
-    console.log("Socket emit skipped:", error.message);
-  }
-};
+const { notifyRequestUpdate, notifyArrived } = require("../socket/socket");
 
 const register = async (req, res, next) => {
   try {
@@ -155,7 +142,7 @@ const changeRequestStatus = async ({
 
   request.statusHistory.push(statusLog._id);
   await request.save();
-  emitRequestUpdate(request);
+  notifyRequestUpdate(request);
 };
 
 const acceptRequest = async (req, res, next) => {
@@ -260,20 +247,6 @@ const deliverRequest = async (req, res, next) => {
     });
   } catch (error) {
     return next(error);
-  }
-};
-
-const notifyArrived = async (request) => {
-  try {
-    const io = getIO();
-    io.to(`request_${request._id}`).emit("arrival_update", {
-      requestId: request._id,
-      status: request.status,
-      deliveryPin: request.deliveryPin,
-      request,
-    });
-  } catch (error) {
-    console.log("Socket emit skipped:", error.message);
   }
 };
 

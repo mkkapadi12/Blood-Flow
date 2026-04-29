@@ -18,6 +18,7 @@ import {
 import CreateRequestForm from "@/pages/requester/components/CreateRequestForm";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { getStatusColor, getUrgencyColor } from "@/lib/utils";
 
 const RequesterDashboard = () => {
   const { requester, myRequests, loading } = useSelector(
@@ -39,28 +40,8 @@ const RequesterDashboard = () => {
   ).length;
   const recentRequests = myRequests.slice(0, 3);
 
-  const getStatusColor = (status) => {
-    switch (status?.toLowerCase()) {
-      case "delivered":
-        return "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
-      case "in-transit":
-        return "bg-blue-500/10 text-blue-400 border-blue-500/20";
-      case "accepted":
-        return "bg-amber-500/10 text-amber-400 border-amber-500/20";
-      default:
-        return "bg-gray-800 text-gray-300 border-gray-700";
-    }
-  };
-
-  const getUrgencyColor = (urgency) => {
-    if (urgency?.toLowerCase() === "critical") {
-      return "bg-red-500/10 text-red-400 border-red-500/20";
-    }
-    return "bg-gray-800 text-gray-400 border-gray-700";
-  };
-
   return (
-    <div className="p-4 md:p-6 max-w-5xl mx-auto space-y-6">
+    <div className="p-4 md:p-6 w-full mx-auto space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-white tracking-tight">

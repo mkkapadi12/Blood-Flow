@@ -1,7 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "@/store/features/dispatcher/dispatcher.slice";
+import {
+  getDispatcherProfile,
+  logout,
+  getAllDispatcherRequests,
+  getMyDispatcherRequests,
+} from "@/store/features/dispatcher/dispatcher.slice";
+import { socket } from "@/lib/socket";
+import { toast } from "sonner";
 import DispatcherSidebar from "@/pages/dispatcher/components/DispatcherSidebar";
 import DispatcherHeader from "@/pages/dispatcher/components/DispatcherHeader";
 
@@ -17,6 +24,34 @@ const DispatcherLayout = () => {
     dispatch(logout());
     navigate("/dispatcher/login");
   };
+
+  useEffect(() => {
+    dispatch(getDispatcherProfile());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (!dispatcher?._id) return;
+
+    socket.emit("join-dispatcher");
+
+    const onNewRequest = (request) => {
+      toast.info(`New request available from ${request.hospital || "Hospital"}`);
+      dispatch(getAllDispatcherRequests());
+    };
+
+    const onStatusUpdate = (payload) => {
+      dispatch(getAllDispatcherRequests());
+      dispatch(getMyDispatcherRequests());
+    };
+
+    socket.on("new_request", onNewRequest);
+    socket.on("status_update", onStatusUpdate);
+
+    return () => {
+      socket.off("new_request", onNewRequest);
+      socket.off("status_update", onStatusUpdate);
+    };
+  }, [dispatch, dispatcher?._id]);
 
   return (
     <div className="flex h-screen bg-gray-950 text-gray-100 overflow-hidden">
