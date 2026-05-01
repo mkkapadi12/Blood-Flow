@@ -6,6 +6,7 @@ import AllRequestes from "@/pages/dispatcher/page/AllRequestes";
 import RequestDetailsPage from "@/pages/dispatcher/page/RequestDetailsPage";
 import ProtectedRoute from "./ProtectedRoute";
 import { DISPATCHER_TOKEN_KEY } from "@/config/storage-keys";
+import Hospitals from "@/pages/dispatcher/page/Hospitals";
 
 export const dispatcherRoutes = [
   { path: "/dispatcher/login", element: <DispatcherLogin /> },
@@ -24,6 +25,7 @@ export const dispatcherRoutes = [
       { path: "dashboard", element: <DispatcherDashboard /> },
       { path: "requests", element: <AllRequestes /> },
       { path: "requests/:id", element: <RequestDetailsPage /> },
+      { path: "hospitals", element: <Hospitals /> },
     ],
   },
 ];

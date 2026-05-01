@@ -11,6 +11,7 @@ import { socket } from "@/lib/socket";
 import { toast } from "sonner";
 import DispatcherSidebar from "@/pages/dispatcher/components/DispatcherSidebar";
 import DispatcherHeader from "@/pages/dispatcher/components/DispatcherHeader";
+import { getAllHospitals } from "@/store/features/hospitals/hospital.slice";
 
 const DispatcherLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -27,6 +28,7 @@ const DispatcherLayout = () => {
 
   useEffect(() => {
     dispatch(getDispatcherProfile());
+    dispatch(getAllHospitals());
   }, [dispatch]);
 
   useEffect(() => {
@@ -35,7 +37,9 @@ const DispatcherLayout = () => {
     socket.emit("join-dispatcher");
 
     const onNewRequest = (request) => {
-      toast.info(`New request available from ${request.hospital || "Hospital"}`);
+      toast.info(
+        `New request available from ${request.hospital || "Hospital"}`,
+      );
       dispatch(getAllDispatcherRequests());
     };
 

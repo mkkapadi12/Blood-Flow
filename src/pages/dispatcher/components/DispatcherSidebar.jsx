@@ -9,6 +9,7 @@ import {
   ChevronRight,
   Radio,
   Settings,
+  Hospital,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -22,6 +23,11 @@ const NAV_ITEMS = [
     label: "All Requests",
     to: "/dispatcher/requests",
     icon: ClipboardList,
+  },
+  {
+    label: "Hospitals",
+    to: "/dispatcher/hospitals",
+    icon: Hospital,
   },
   {
     label: "Settings",
@@ -51,7 +57,7 @@ const DispatcherSidebar = ({
       <aside
         className={cn(
           "fixed inset-y-0 left-0 z-30 w-64 flex flex-col bg-gray-900 border-r border-gray-800 transition-transform duration-300 ease-in-out lg:static lg:translate-x-0",
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          sidebarOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
         {/* Logo */}
@@ -100,7 +106,7 @@ const DispatcherSidebar = ({
                   "group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150",
                   isActive
                     ? "bg-orange-500/10 text-orange-400 border border-orange-500/20"
-                    : "text-gray-400 hover:text-white hover:bg-gray-800 border border-transparent"
+                    : "text-gray-400 hover:text-white hover:bg-gray-800 border border-transparent",
                 )
               }
             >
@@ -111,7 +117,7 @@ const DispatcherSidebar = ({
                       "w-4 h-4 shrink-0",
                       isActive
                         ? "text-orange-400"
-                        : "text-gray-500 group-hover:text-gray-300"
+                        : "text-gray-500 group-hover:text-gray-300",
                     )}
                   />
                   <span>{label}</span>
