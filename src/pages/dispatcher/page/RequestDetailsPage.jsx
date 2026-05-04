@@ -13,7 +13,6 @@ import {
   Clock,
   MapPin,
   Activity,
-  CheckCircle2,
   ShieldCheck,
   Droplet,
   Building2,
@@ -43,8 +42,6 @@ const RequestDetailsPage = () => {
       dispatch(getDispatcherSingleRequest(id));
     }
   }, [dispatch, id]);
-
-  console.log(currentRequest);
 
   useEffect(() => {
     if (!id) return;
@@ -226,10 +223,21 @@ const RequestDetailsPage = () => {
                 <Building2 className="w-5 h-5 text-gray-500 shrink-0 mt-0.5" />
                 <div>
                   <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Hospital Name
+                  </p>
+                  <p className="text-sm font-medium text-white mt-1">
+                    {currentRequest?.hospital?.name}
+                  </p>
+                </div>
+              </div>
+              <div className="p-5 flex items-start gap-3">
+                <MapPin className="w-5 h-5 text-gray-500 shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Hospital Address
                   </p>
                   <p className="text-sm font-medium text-white mt-1">
-                    {currentRequest.hospital}
+                    {currentRequest?.hospital?.address}
                   </p>
                 </div>
               </div>
@@ -313,7 +321,12 @@ const RequestDetailsPage = () => {
               {currentRequest.location?.lat && currentRequest.location?.lng && (
                 <div className="pt-4 border-t border-gray-800">
                   <Button
-                    onClick={() => openLiveLocation(currentRequest.location.lat, currentRequest.location.lng)}
+                    onClick={() =>
+                      openLiveLocation(
+                        currentRequest.location.lat,
+                        currentRequest.location.lng,
+                      )
+                    }
                     variant="outline"
                     className="w-full border-gray-700 bg-transparent text-gray-300 hover:bg-gray-800 hover:text-white"
                   >

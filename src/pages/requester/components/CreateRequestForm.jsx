@@ -66,6 +66,7 @@ const CreateRequestForm = ({ children }) => {
     const payload = {
       bloodType: data.bloodType.trim(),
       unitsRequired: Number(data.unitsRequired),
+      hospitalName: data.hospitalName.trim(),
       hospitalAddress: data.hospitalAddress.trim(),
       urgencyLevel: data.urgencyLevel,
     };
@@ -90,6 +91,7 @@ const CreateRequestForm = ({ children }) => {
       form.reset({
         bloodType: "",
         unitsRequired: "",
+        hospitalName: "",
         hospitalAddress: "",
         urgencyLevel: "normal",
         lat: "",
@@ -123,7 +125,7 @@ const CreateRequestForm = ({ children }) => {
       </DialogTrigger>
       <DialogContent className="sm:max-w-2xl bg-gray-900 border-gray-800 text-white p-0 overflow-hidden">
         <div className="absolute inset-0 bg-linear-to-br from-red-500/5 to-transparent opacity-100 pointer-events-none" />
-        
+
         <div className="relative z-10 p-6 space-y-6">
           <DialogHeader className="border-b border-gray-800 pb-4">
             <DialogTitle className="text-xl font-semibold flex items-center gap-2 text-white">
@@ -131,14 +133,18 @@ const CreateRequestForm = ({ children }) => {
               Create Emergency Request
             </DialogTitle>
             <DialogDescription className="text-gray-400">
-              Fill the details below to create a blood request. Dispatchers will be notified immediately.
+              Fill the details below to create a blood request. Dispatchers will
+              be notified immediately.
             </DialogDescription>
           </DialogHeader>
-          
+
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
             <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="bloodType" className="text-gray-300 flex items-center gap-1.5">
+                <Label
+                  htmlFor="bloodType"
+                  className="text-gray-300 flex items-center gap-1.5"
+                >
                   <Droplet className="w-3.5 h-3.5 text-red-400" />
                   Blood Type
                 </Label>
@@ -149,15 +155,33 @@ const CreateRequestForm = ({ children }) => {
                   })}
                   className="h-10 w-full rounded-md border border-gray-800 bg-gray-950 px-3 py-2 text-sm text-white outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/50 transition-all"
                 >
-                  <option value="" className="bg-gray-900">Select blood type</option>
-                  <option value="A+" className="bg-gray-900">A+</option>
-                  <option value="A-" className="bg-gray-900">A-</option>
-                  <option value="B+" className="bg-gray-900">B+</option>
-                  <option value="B-" className="bg-gray-900">B-</option>
-                  <option value="AB+" className="bg-gray-900">AB+</option>
-                  <option value="AB-" className="bg-gray-900">AB-</option>
-                  <option value="O+" className="bg-gray-900">O+</option>
-                  <option value="O-" className="bg-gray-900">O-</option>
+                  <option value="" className="bg-gray-900">
+                    Select blood type
+                  </option>
+                  <option value="A+" className="bg-gray-900">
+                    A+
+                  </option>
+                  <option value="A-" className="bg-gray-900">
+                    A-
+                  </option>
+                  <option value="B+" className="bg-gray-900">
+                    B+
+                  </option>
+                  <option value="B-" className="bg-gray-900">
+                    B-
+                  </option>
+                  <option value="AB+" className="bg-gray-900">
+                    AB+
+                  </option>
+                  <option value="AB-" className="bg-gray-900">
+                    AB-
+                  </option>
+                  <option value="O+" className="bg-gray-900">
+                    O+
+                  </option>
+                  <option value="O-" className="bg-gray-900">
+                    O-
+                  </option>
                 </select>
                 {form.formState.errors.bloodType && (
                   <p className="text-xs text-red-400 mt-1">
@@ -167,7 +191,10 @@ const CreateRequestForm = ({ children }) => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="unitsRequired" className="text-gray-300 flex items-center gap-1.5">
+                <Label
+                  htmlFor="unitsRequired"
+                  className="text-gray-300 flex items-center gap-1.5"
+                >
                   <Activity className="w-3.5 h-3.5 text-red-400" />
                   Units Required
                 </Label>
@@ -194,9 +221,34 @@ const CreateRequestForm = ({ children }) => {
                 )}
               </div>
             </div>
-
             <div className="space-y-2">
-              <Label htmlFor="hospitalAddress" className="text-gray-300 flex items-center gap-1.5">
+              <Label
+                htmlFor="hospitalName"
+                className="text-gray-300 flex items-center gap-1.5"
+              >
+                <Building2 className="w-3.5 h-3.5 text-red-400" />
+                Hospital Name
+              </Label>
+              <Input
+                id="hospitalName"
+                type="text"
+                placeholder="Hospital / clinic full name"
+                className="h-10 border-gray-800 bg-gray-950 text-white placeholder:text-gray-600 focus-visible:ring-red-500/50 focus-visible:border-red-500/50"
+                {...form.register("hospitalName", {
+                  required: "Hospital name is required",
+                })}
+              />
+              {form.formState.errors.hospitalName && (
+                <p className="text-xs text-red-400 mt-1">
+                  {form.formState.errors.hospitalName.message}
+                </p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label
+                htmlFor="hospitalAddress"
+                className="text-gray-300 flex items-center gap-1.5"
+              >
                 <Building2 className="w-3.5 h-3.5 text-red-400" />
                 Hospital Address
               </Label>
@@ -217,7 +269,9 @@ const CreateRequestForm = ({ children }) => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="urgencyLevel" className="text-gray-300">Urgency Level</Label>
+              <Label htmlFor="urgencyLevel" className="text-gray-300">
+                Urgency Level
+              </Label>
               <select
                 id="urgencyLevel"
                 {...form.register("urgencyLevel", {
@@ -225,8 +279,12 @@ const CreateRequestForm = ({ children }) => {
                 })}
                 className="h-10 w-full rounded-md border border-gray-800 bg-gray-950 px-3 py-2 text-sm text-white outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/50 transition-all"
               >
-                <option value="normal" className="bg-gray-900">Normal</option>
-                <option value="critical" className="bg-gray-900">Critical</option>
+                <option value="normal" className="bg-gray-900">
+                  Normal
+                </option>
+                <option value="critical" className="bg-gray-900">
+                  Critical
+                </option>
               </select>
             </div>
 
@@ -264,9 +322,9 @@ const CreateRequestForm = ({ children }) => {
               </div>
             </div>
 
-            <Button 
-              type="submit" 
-              className="w-full bg-red-600 hover:bg-red-700 text-white mt-4" 
+            <Button
+              type="submit"
+              className="w-full bg-red-600 hover:bg-red-700 text-white mt-4"
               disabled={loading}
             >
               {loading ? "Creating request..." : "Create Request"}
@@ -279,4 +337,3 @@ const CreateRequestForm = ({ children }) => {
 };
 
 export default CreateRequestForm;
-

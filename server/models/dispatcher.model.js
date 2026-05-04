@@ -19,6 +19,9 @@ const dispatcherSchema = new Schema({
     type: String,
     required: [true, "password is required!"],
   },
+
+  lat: { type: Number, default: null },
+  lng: { type: Number, default: null },
 });
 
 dispatcherSchema.pre("save", async function () {

@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const STATUS = ["searching", "accepted", "in-transit", "delivered"];
+const STATUS = ["searching", "accepted", "in-transit", "delivered", "cancelled"];
 
 const RequestSchema = new mongoose.Schema(
   {
@@ -18,7 +18,10 @@ const RequestSchema = new mongoose.Schema(
     type: { type: String, enum: ["blood", "oxygen"], required: true },
     bloodGroup: String,
     units: { type: Number, required: true },
-    hospital: String,
+    hospital: {
+      name: { type: String, required: true },
+      address: { type: String, required: true },
+    },
     urgency: { type: String, enum: ["normal", "critical"], default: "normal" },
 
     location: {

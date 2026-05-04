@@ -2,17 +2,22 @@ const express = require("express");
 const router = express.Router();
 const dispatcherController = require("../controllers/dispatcher.controller");
 const dispatcherMiddleware = require("../middlewares/dispatcher.middleware");
+const validate = require("../middlewares/validate.middleware");
+const {
+  registerSchema,
+  loginSchema,
+} = require("../validators/dispatcher.validator");
 
 //register
-router.post("/register", dispatcherController.register);
+router.post("/register", validate(registerSchema), dispatcherController.register);
 
 //login
-router.post("/login", dispatcherController.login);
+router.post("/login", validate(loginSchema), dispatcherController.login);
 
 //profile
 router.get("/profile", dispatcherMiddleware, dispatcherController.profile);
 
-//get all requests
+//get all requests (excludes cancelled)
 router.get(
   "/get-all-requests",
   dispatcherMiddleware,
@@ -49,5 +54,22 @@ router.put(
   dispatcherMiddleware,
   dispatcherController.deliverRequest,
 );
+
+//unassign (dispatcher cancels their own acceptance)
+router.put(
+  "/requests/:id/unassign",
+  dispatcherMiddleware,
+  dispatcherController.unassignRequest,
+);
+
+//location tracking
+router.patch(
+  "/location",
+  dispatcherMiddleware,
+  dispatcherController.updateLocation,
+);
+
+//get dispatcher location (public, no auth)
+router.get("/:id/location", dispatcherController.getDispatcherLocation);
 
 module.exports = router;

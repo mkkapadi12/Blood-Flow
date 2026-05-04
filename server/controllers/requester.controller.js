@@ -1,7 +1,14 @@
 const REQUESTER = require("../models/requester.model");
 const REQUEST = require("../models/request.model");
 const STATUSLOG = require("../models/status.model");
-const { notifyNewRequest, notifyRequestUpdate } = require("../socket/socket");
+const INVENTORY = require("../models/inventory.model");
+const HOSPITAL = require("../models/hospital.model");
+const { notifyNewRequest, notifyRequestUpdate, getIO } = require("../socket/socket");
+const { sendMail } = require("../utils/mailer");
+const {
+  requestCreated,
+  requestDelivered,
+} = require("../utils/emailTemplates");
 
 const register = async (req, res, next) => {
   try {
@@ -63,9 +70,24 @@ const profile = async (req, res, next) => {
 const createRequest = async (req, res, next) => {
   try {
     const requester = req.requester;
+
+    // ── Duplicate active-request guard ──
+    const activeRequest = await REQUEST.findOne({
+      requester: requester._id,
+      status: { $in: ["searching", "accepted", "in-transit"] },
+    });
+    if (activeRequest) {
+      const error = new Error(
+        "You already have an active request. Cancel or wait for it to complete.",
+      );
+      error.statusCode = 400;
+      return next(error);
+    }
+
     const {
       bloodType,
       unitsRequired,
+      hospitalName,
       hospitalAddress,
       urgencyLevel,
       type,
@@ -126,7 +148,10 @@ const createRequest = async (req, res, next) => {
       bloodGroup:
         normalizedType === "blood" ? String(bloodType).trim() : undefined,
       units: parsedUnits,
-      hospital: String(hospitalAddress).trim(),
+      hospital: {
+        name: String(hospitalName).trim(),
+        address: String(hospitalAddress).trim(),
+      },
       urgency: normalizedUrgency,
       location: hasCoordinates ? { lat: parsedLat, lng: parsedLng } : undefined,
     });
@@ -142,9 +167,46 @@ const createRequest = async (req, res, next) => {
     await newRequest.save();
     notifyNewRequest(newRequest);
 
+    // ── Low-stock inventory check (warn only, don't block) ──
+    let lowStock = false;
+    if (normalizedType === "blood" && bloodType) {
+      try {
+        // Find the hospital by name to get its _id
+        const hospital = await HOSPITAL.findOne({
+          name: { $regex: new RegExp(`^${String(hospitalName).trim()}$`, "i") },
+        });
+        if (hospital) {
+          const inventory = await INVENTORY.findOne({
+            hospitalId: hospital._id,
+            bloodGroup: String(bloodType).trim(),
+          });
+          if (!inventory || inventory.units < parsedUnits) {
+            lowStock = true;
+          }
+        }
+      } catch (inventoryErr) {
+        // Inventory check is non-critical — don't fail the request
+        console.error("[Inventory check]", inventoryErr.message);
+      }
+    }
+
+    // Fire-and-forget email to requester
+    if (requester.email) {
+      sendMail(
+        requester.email,
+        "BloodFlow — Request Created",
+        requestCreated(
+          requester.name || "Requester",
+          newRequest.bloodGroup,
+          newRequest.hospital?.name || hospitalAddress,
+        ),
+      );
+    }
+
     return res.status(201).json({
       msg: "Request created successfully!",
       request: newRequest,
+      ...(lowStock && { lowStock: true }),
     });
   } catch (error) {
     return next(error);
@@ -208,7 +270,10 @@ const verifyDeliveryPin = async (req, res, next) => {
       return next(error);
     }
 
-    const request = await REQUEST.findById(req.params.id);
+    const request = await REQUEST.findById(req.params.id).populate(
+      "dispatcher",
+      "name email",
+    );
 
     if (!request) {
       const error = new Error("Request not found");
@@ -222,9 +287,11 @@ const verifyDeliveryPin = async (req, res, next) => {
       return next(error);
     }
 
-    if (request.status !== "in-transit") {
+    // The dispatcher marks the request as "delivered" first (deliverRequest),
+    // then the requester confirms with PIN — so we check for "delivered" status.
+    if (request.status !== "delivered") {
       const error = new Error(
-        "PIN can be verified only when request is in-transit",
+        "PIN can be verified only when request is delivered",
       );
       error.statusCode = 400;
       return next(error);
@@ -237,7 +304,6 @@ const verifyDeliveryPin = async (req, res, next) => {
     }
 
     request.pinVerified = true;
-    request.status = "delivered";
 
     const statusLog = await STATUSLOG.create({
       request: request._id,
@@ -250,8 +316,86 @@ const verifyDeliveryPin = async (req, res, next) => {
     await request.save();
     notifyRequestUpdate(request);
 
+    // Fire-and-forget email to both requester and dispatcher
+    const requesterEmail = req.requester.email;
+    const dispatcherEmail = request.dispatcher?.email;
+    if (requesterEmail) {
+      sendMail(
+        requesterEmail,
+        "BloodFlow — Delivery Confirmed",
+        requestDelivered(req.requester.name || "Requester"),
+      );
+    }
+    if (dispatcherEmail) {
+      sendMail(
+        dispatcherEmail,
+        "BloodFlow — Delivery Confirmed",
+        requestDelivered(request.dispatcher.name || "Dispatcher"),
+      );
+    }
+
     return res.status(200).json({
       msg: "Delivery confirmed successfully!",
+      request,
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+// ── Cancel request (requester) ──
+const cancelRequest = async (req, res, next) => {
+  try {
+    const request = await REQUEST.findById(req.params.id);
+
+    if (!request) {
+      const error = new Error("Request not found");
+      error.statusCode = 404;
+      return next(error);
+    }
+
+    if (String(request.requester) !== String(req.requester._id)) {
+      const error = new Error("You are not authorized to cancel this request");
+      error.statusCode = 403;
+      return next(error);
+    }
+
+    if (!["searching", "accepted"].includes(request.status)) {
+      const error = new Error(
+        "Only searching or accepted requests can be cancelled",
+      );
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    // If a dispatcher was already assigned, notify them
+    if (request.status === "accepted" && request.dispatcher) {
+      try {
+        const io = getIO();
+        io.to(`dispatcher_${request.dispatcher}`).emit("request_cancelled", {
+          requestId: request._id,
+          message: "The requester has cancelled this request.",
+        });
+      } catch (_) {
+        // Socket notification failure is non-critical
+      }
+    }
+
+    request.status = "cancelled";
+
+    const statusLog = await STATUSLOG.create({
+      request: request._id,
+      changedBy: req.requester._id,
+      changedByRole: "requester",
+      newStatus: "cancelled",
+    });
+
+    request.statusHistory.push(statusLog._id);
+    await request.save();
+    notifyRequestUpdate(request);
+
+    return res.status(200).json({
+      msg: "Request cancelled successfully.",
       request,
     });
   } catch (error) {
@@ -267,4 +411,5 @@ module.exports = {
   getMyRequests,
   getSingleRequest,
   verifyDeliveryPin,
+  cancelRequest,
 };

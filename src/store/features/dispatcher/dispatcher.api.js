@@ -47,7 +47,7 @@ export const dispatcherAPI = {
   acceptRequest: async (requestId) => {
     const token = localStorage.getItem(DISPATCHER_TOKEN_KEY);
     const response = await privateAPI.put(
-      `/volunteer/${requestId}/accept`,
+      `/dispatcher/requests/${requestId}/accept`,
       {},
       {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -59,7 +59,7 @@ export const dispatcherAPI = {
   pickupRequest: async (requestId) => {
     const token = localStorage.getItem(DISPATCHER_TOKEN_KEY);
     const response = await privateAPI.put(
-      `/volunteer/${requestId}/pickup`,
+      `/dispatcher/requests/${requestId}/pickup`,
       {},
       {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -71,7 +71,7 @@ export const dispatcherAPI = {
   deliverRequest: async (requestId) => {
     const token = localStorage.getItem(DISPATCHER_TOKEN_KEY);
     const response = await privateAPI.put(
-      `/volunteer/${requestId}/deliver`,
+      `/dispatcher/requests/${requestId}/deliver`,
       {},
       {
         headers: token ? { Authorization: `Bearer ${token}` } : {},

@@ -94,10 +94,20 @@ const notifyArrived = (request) => {
   }
 };
 
+const notifyLocationUpdate = (dispatcherId, lat, lng) => {
+  if (!io) return;
+  io.to("dispatchers").emit("dispatcher_location_update", {
+    dispatcherId,
+    lat,
+    lng,
+  });
+};
+
 module.exports = { 
   initSocket, 
   getIO, 
   notifyNewRequest, 
   notifyRequestUpdate, 
-  notifyArrived 
+  notifyArrived,
+  notifyLocationUpdate,
 };

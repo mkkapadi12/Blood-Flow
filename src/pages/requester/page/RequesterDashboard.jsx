@@ -31,6 +31,8 @@ const RequesterDashboard = () => {
     dispatch(getMyRequesterRequests());
   }, [dispatch]);
 
+  console.log(myRequests);
+
   const totalRequests = myRequests.length;
   const inTransitRequests = myRequests.filter(
     (r) => r.status === "in-transit",
@@ -177,7 +179,7 @@ const RequesterDashboard = () => {
                     <div className="flex-1 space-y-1">
                       <div className="flex items-center gap-2">
                         <h3 className="font-medium text-white line-clamp-1">
-                          {request.hospital}
+                          {request?.hospital?.name}
                         </h3>
                         <Badge
                           variant="outline"

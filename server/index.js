@@ -10,8 +10,8 @@ const { initSocket } = require("./socket/socket");
 const requesterRoutes = require("./routes/requester.routes");
 const dispatcherRoutes = require("./routes/dispatcher.routes");
 const requestRoutes = require("./routes/request.routes");
-const volunteerRoutes = require("./routes/volunteer.routes");
 const hospitalRoutes = require("./routes/hospital.routes");
+const inventoryRoutes = require("./routes/inventory.routes");
 
 const errorMiddleware = require("./middlewares/error.middleware");
 
@@ -39,8 +39,9 @@ app.get("/api", (req, res) => res.send("API is running..."));
 app.use("/api/requester", requesterRoutes);
 app.use("/api/dispatcher", dispatcherRoutes);
 app.use("/api/requests", requestRoutes);
-app.use("/api/volunteer", volunteerRoutes);
+
 app.use("/api/hospital", hospitalRoutes);
+app.use("/api/inventory", inventoryRoutes);
 
 //error middleware
 app.use(errorMiddleware);

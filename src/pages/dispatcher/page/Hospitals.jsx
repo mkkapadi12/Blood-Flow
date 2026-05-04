@@ -61,7 +61,7 @@ const Hospitals = () => {
         setNearbyActive(true);
         setSearchQuery("");
         dispatch(
-          getNearbyHospitals({ lat: latitude, lng: longitude, radius: 10000 }),
+          getNearbyHospitals({ lat: latitude, lng: longitude, radius: 8000 }),
         );
         toast.success("Found nearby hospitals");
       },
@@ -181,6 +181,16 @@ const Hospitals = () => {
               </Button>
             </div>
           )}
+        </CardContent>
+      </Card>
+
+      {/* Hospital Countng */}
+
+      <Card className="bg-gray-900 border-gray-800">
+        <CardContent>
+          <p className="text-sm text-gray-400">
+            Total Hospitals: {sortedHospitals.length}
+          </p>
         </CardContent>
       </Card>
 

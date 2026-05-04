@@ -9,6 +9,7 @@ import {
   Activity,
   ChevronRight,
   LayoutDashboard,
+  Building2,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -114,9 +115,9 @@ const MyRequests = () => {
 
                   <div className="flex items-center gap-4 text-sm text-gray-400">
                     <div className="flex items-center gap-1.5">
-                      <MapPin className="w-3.5 h-3.5" />
+                      <Building2 className="w-3.5 h-3.5" />
                       <span className="truncate max-w-[200px] sm:max-w-xs">
-                        {request.hospital}
+                        {request?.hospital?.name}
                       </span>
                     </div>
                     <div className="flex items-center gap-1.5">
